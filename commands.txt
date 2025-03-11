@@ -1,0 +1,22 @@
+minikube start
+minikube status
+eval $(minikube docker-env)
+cd app
+docker build -t flask-app .
+kubectl apply -f ../manifests/configmap/postgres-configmap.yaml
+kubectl apply -f ../manifests/secret/postgres-secret.yaml
+kubectl apply -f ../manifests/deployment/postgres-deployment.yaml
+kubectl get pods
+kubectl apply -f ../manifests/deployment/flask-deployment.yaml
+kubectl get pods
+minikube service flask-service
+
+cd ..
+kubectl describe deployment flask-app > submission/internal_deployment_snapshot.txt
+kubectl get all > submission/kubectl_get_all.txt
+kubectl scale deployment flask-app --replicas=3
+kubectl get pods > submission/scaling_test.txt
+kubectl autoscale deployment flask-app --cpu-percent=50 --min=1 --max=5
+kubectl get hpa > submission/min_max_replicas.txt
+
+
